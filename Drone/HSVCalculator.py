@@ -58,8 +58,6 @@ for frame in camera.capture_continuous(rawCapture,format="bgr", use_video_port=T
 
     print(f'[{h_min},{s_min},{v_min},{h_max},{s_max},{v_max}]')
 
-    #mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
-    #hStack = np.hstack([img, mask, result])
     hStack = np.hstack([img, result])
 
     cv2.imshow('Horizontal Stacking', hStack)

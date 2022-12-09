@@ -13,8 +13,8 @@ leave=False
 # Image size
 frameWidth = 480
 frameHeight = 368
-# hue, saturation values from colorpicker
-HSV = [0,105,170,179,255,255]
+# hue, saturation values from HSVCalculator
+HSV = [0,48,160,179,244,255]
 
 # Split camera img into n equal section
 sections = 3
@@ -122,11 +122,11 @@ def getErrorValues(lineposArray, centerx):
 
     elif lineposArray == [0, 0, 0]:
         yawerror = yawvalues[2]
-        leave=True
+        #leave=True
 
     elif lineposArray == [1, 0, 1]:
         yawerror = yawvalues[2]
-        leave=True
+        #leave=True
     print(error,yawerror)
     return error,yawerror
 
@@ -135,7 +135,7 @@ if __name__=="__main__":
     # initialize the camera and grab a reference to the raw camera capture
     camera = PiCamera()
     camera.resolution = (frameWidth, frameHeight)
-    camera.framerate = 25
+    camera.framerate = 10
     # Correct camera angle
     camera.vflip=True
     camera.rotation= 90
@@ -146,24 +146,21 @@ if __name__=="__main__":
     vehicle=Drone.connectMyCopter()
     try:
         #Drone.arm_and_takeoff(vehicle,1.5)
-
         for frame in camera.capture_continuous(rawCapture,format="bgr", use_video_port=True):
             if leave:
                 break
             # Get the image from the frame
             img=frame.array
-            #Resize the image if needed
-            #img = cv2.resize(img, (frameWidth, frameHeight))
             # clear the stream in preparation for the next frame
             rawCapture.truncate(0)
 
             imgThres = masking(img)
-
             centerx = getContours(imgThres, img)
 
             lineposArray = getLinePosition(imgThres, sections)
 
             error,yawerror=getErrorValues(lineposArray, centerx)
+            # Send commands to the drone
             Drone.setvelocitywithyawangle(vehicle,0.1,error,yawerror)
             cv2.line(img,(int(frameWidth/2)-80,0),(int(frameWidth/2)-80,frameHeight),(255,255,0),3)
             cv2.line(img,(int(frameWidth/2)+80,0),(int(frameWidth/2)+80,frameHeight),(255,255,0),3)
@@ -173,13 +170,8 @@ if __name__=="__main__":
             # Leave if Q is pressed
             if (cv2.waitKey(1) & 0xFF == ord('q')):
                 break
-            while not leave:
-                k=cv2.waitKey(1)
-                if k & 0xFF == ord('q'):
-                    leave=True
-                if k & 0xFF == ord('n'):
-                    break
     finally:
-        #Drone.land()
-        vehicle.close()
-        cv2.destroyAllWindows()
+        if vehicle!=None:
+            Drone.land(vehicle)
+            vehicle.close()
+            cv2.destroyAllWindows()

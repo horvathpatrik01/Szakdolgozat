@@ -22,7 +22,7 @@ def connectMyCopter():
     connection_string=args.connect
 
     try:
-        vehicle=connect(connection_string,wait_ready=True)
+        vehicle=connect('tcp:192.168.174.44:5760',wait_ready=True)
     # Bad TCP connection
     except socket.error:
         print ("No server exists!")
@@ -164,12 +164,12 @@ def mavlink_mission(vehicle):
     set_velocity_body(vehicle)
 ###MAIN Mission
 if __name__=="__main__":
-    errorarray=[-10,-7,-5,-2,0,5,1,2,5,10,10,6,3,-6,-3,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-    weights=[-25,-15,0,15,25]
-    erroryawarray=[2,2,2,2,2,2,2,2,2,2,2,2,0,2,2,2,2,1,2,2,4,4,1,0,0,1,1,2,3,2,4,3,2,1]
-
-    errorarray2=[-10,-7,-5,-2,0,0,0,2,5,10,10,6,3,0,0,-1,0,1,0,2,5,3,0,-3,-5,-8,-5,-3,-4,-2,0,0,1,0]
-    erroryawarray2=[0,1,2,2,2,2,2,4,3,2,2,1,2,2,1,0,0,1,2,2,4,4,3,3,2,2,2,2,1,2,4,3,2,1]
+    #Testing values
+    #errorarray=[-10,-7,-5,-2,0,5,1,2,5,10,10,6,3,-6,-3,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    #weights=[-25,-15,0,15,25]
+    #erroryawarray=[2,2,2,2,2,2,2,2,2,2,2,2,0,2,2,2,2,1,2,2,4,4,1,0,0,1,1,2,3,2,4,3,2,1]
+    #errorarray2=[-10,-7,-5,-2,0,0,0,2,5,10,10,6,3,0,0,-1,0,1,0,2,5,3,0,-3,-5,-8,-5,-3,-4,-2,0,0,1,0]
+    #erroryawarray2=[0,1,2,2,2,2,2,4,3,2,2,1,2,2,1,0,0,1,2,2,4,4,3,3,2,2,2,2,1,2,4,3,2,1]
     vehicle=None
     # Connect to the drone
     vehicle=connectMyCopter()
@@ -183,22 +183,21 @@ if __name__=="__main__":
     try:
         arm_and_takeoff(vehicle,1.5)
         time.sleep(2)
-        print("Starting Simple Mission...")
+        #print("Starting Simple Mission...")
         # Testing only translation or yaw
-        for i in range(len(errorarray)):
-            setvelocitywithyawangle(vehicle,yerror=errorarray[i],erroryaw=weights[erroryawarray[i]])
-            print(errorarray[i],weights[erroryawarray[i]])
-            time.sleep(0.5)
-        #print("Second phase comming")
+        #for i in range(len(errorarray)):
+            #setvelocitywithyawangle(vehicle,yerror=errorarray[i],erroryaw=weights[erroryawarray[i]])
+            #print(errorarray[i],weights[erroryawarray[i]])
+            #time.sleep(0.5)
         set_velocity_body(vehicle)
-        #time.sleep(2)
-        mavlink_mission(vehicle)
         time.sleep(2)
-        # Test both translation and yaw
-        for i in range(len(errorarray2)):
-            setvelocitywithyawangle(vehicle,yerror=errorarray2[i],erroryaw=weights[erroryawarray2[i]])
-            print(errorarray2[i],weights[erroryawarray2[i]])
-            time.sleep(0.5)
+        #mavlink_mission(vehicle)
+        time.sleep(2)
+        # Test both translation and yaw at the same time
+        #for i in range(len(errorarray2)):
+            #setvelocitywithyawangle(vehicle,yerror=errorarray2[i],erroryaw=weights[erroryawarray2[i]])
+            #print(errorarray2[i],weights[erroryawarray2[i]])
+            #time.sleep(0.5)
     finally:
         if vehicle!=None:
             print("Landing")
